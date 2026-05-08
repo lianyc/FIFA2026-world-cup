@@ -3,12 +3,22 @@ import { useRouter, useRoute } from 'vue-router'
 import { onMounted } from 'vue'
 import { useMatchStore } from '@/stores/matches'
 
+import { ref } from 'vue'
+
 const router = useRouter()
 const route = useRoute()
+const store = useMatchStore()
+const refreshing = ref(false)
 
 onMounted(() => {
-  useMatchStore().loadApiData()
+  store.loadApiData()
 })
+
+async function refresh() {
+  refreshing.value = true
+  await store.refreshData()
+  refreshing.value = false
+}
 
 const navItems = [
   { name: 'schedule', label: '赛程表', path: '/' },
