@@ -316,4 +316,52 @@ body { min-height: 100vh; }
 }
 
 .el-empty__description { color: var(--color-text-dim) !important; }
+
+/* ── Mobile (max-width: 768px) ─────────────────────────── */
+@media (max-width: 768px) {
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+  }
+
+  .trophy-icon { font-size: 24px; }
+
+  .brand-title { font-size: 18px; }
+
+  .brand-sub { font-size: 11px; }
+
+  .header-nav {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .nav-btn {
+    padding: 8px 14px;
+    font-size: 12px;
+    flex: 1 1 auto;
+    text-align: center;
+  }
+
+  .refresh-btn {
+    flex: 0 0 auto;
+    padding: 8px 12px;
+    margin-left: 0;
+  }
+
+  .app-main {
+    padding: 0 16px 40px;
+  }
+
+  .app-footer {
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 16px;
+    font-size: 11px;
+    text-align: center;
+  }
+}
 </style>
