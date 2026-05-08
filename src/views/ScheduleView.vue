@@ -67,7 +67,7 @@ function formatTime(iso: string) {
   <div class="schedule-page">
     <section class="page-hero">
       <h2 class="hero-title">小组赛赛程</h2>
-      <p class="hero-desc">16 个小组 &middot; 48 场比赛 &middot; 每组前两名晋级 32 强</p>
+      <p class="hero-desc">12 个小组 &middot; 72 场比赛 &middot; 每组前两名 + 8 支最佳第三名晋级 32 强</p>
     </section>
 
     <!-- Group selector -->
