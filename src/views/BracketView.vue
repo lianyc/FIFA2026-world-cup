@@ -643,4 +643,68 @@ watch(columns, () => nextTick(() => calcPaths()), { deep: true })
   border-radius: 50%;
   box-shadow: 0 0 4px rgba(0,0,0,0.15);
 }
+
+/* ── Mobile ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .bracket-page { padding-top: 24px; }
+
+  .hero-title { font-size: 28px; }
+
+  .hero-desc { font-size: 13px; }
+
+  .bracket-grid { gap: 12px; }
+
+  .bracket-match {
+    width: 170px;
+    padding: 8px 10px;
+  }
+
+  .col-center .bracket-match { width: 180px; }
+
+  .column-title { font-size: 12px; }
+
+  .match-id { font-size: 10px; padding: 1px 6px; }
+
+  .match-time .time-text { font-size: 11px; }
+
+  .match-time .time-weekday { font-size: 10px; }
+
+  .match-slot {
+    padding: 5px 8px;
+    gap: 4px;
+    min-height: 34px;
+  }
+
+  .slot-flag { width: 20px; }
+
+  .slot-name { font-size: 12px; }
+
+  .slot-conf { font-size: 9px; }
+
+  .tbd-label { font-size: 10px; padding: 2px 6px; }
+
+  .slot-score { font-size: 15px; }
+
+  .divider-vs { font-size: 9px; }
+
+  .match-header { margin-bottom: 4px; }
+
+  .col-left-roundOf32 .column-matches,
+  .col-right-roundOf32 .column-matches { gap: 2px; }
+
+  .col-left-roundOf16 .column-matches,
+  .col-right-roundOf16 .column-matches { gap: 8px; }
+
+  .col-left-quarterFinal .column-matches,
+  .col-right-quarterFinal .column-matches { gap: 20px; }
+
+  .col-left-semiFinal .column-matches,
+  .col-right-semiFinal .column-matches { gap: 48px; }
+
+  .legend { margin-top: 24px; padding: 14px 16px; }
+
+  .legend-items { gap: 14px; }
+
+  .legend-item { font-size: 11px; }
+}
 </style>
