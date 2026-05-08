@@ -399,7 +399,7 @@ function formatTime(iso: string) {
 
 /* ── Mobile ──────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .schedule-page { padding-top: 24px; }
+  .schedule-page { padding-top: 24px; overflow-x: hidden; }
 
   .hero-title { font-size: 28px; }
 
