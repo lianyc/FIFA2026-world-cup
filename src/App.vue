@@ -44,6 +44,9 @@ function navigate(name: string) {
         >
           {{ item.label }}
         </button>
+        <button class="nav-btn refresh-btn" @click="refresh" title="刷新比赛数据">
+          <span :class="['refresh-icon', { spinning: refreshing }]">&#8635;</span>
+        </button>
       </nav>
     </header>
 
