@@ -1,7 +1,7 @@
 <script lang='ts' setup>
 import { computed } from 'vue'
 import { useMatchStore } from '@/stores/matches'
-import { allMatches, teamMap } from '@/data/worldcup2026'
+import { teamMap } from '@/data/worldcup2026'
 import type { Match } from '@/types'
 
 const store = useMatchStore()
@@ -12,7 +12,7 @@ interface DayGroup {
 }
 
 const sorted = computed<Match[]>(() =>
-  [...allMatches].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+  [...store.matches.value].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 )
 
 const dayGroups = computed<DayGroup[]>(() => {
