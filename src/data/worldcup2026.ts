@@ -157,8 +157,8 @@ function apiRoundLabel(round: number, group: string | null): string {
   return labels[round] || `第${round}轮`
 }
 
-export async function fetchMatchesFromApi(): Promise<Match[]> {
-  if (cachedApiMatches) return cachedApiMatches
+export async function fetchMatchesFromApi(force = false): Promise<Match[]> {
+  if (cachedApiMatches && !force) return cachedApiMatches
 
   try {
     const res = await fetch(API_URL)
