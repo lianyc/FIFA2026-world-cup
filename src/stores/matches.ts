@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { teams, teamMap, groups, groupStageMatches, knockoutMatches, allMatches, matchMap, initStandings } from '@/data/worldcup2026'
+import { teams, teamMap, groups, groupNames, fetchMatchesFromApi, initStandings } from '@/data/worldcup2026'
 import type { GroupName, GroupStanding, Match, Team } from '@/types'
 
 const LS_RESULTS = 'fifa2026-results'
@@ -23,16 +23,46 @@ export const useMatchStore = defineStore('matches', () => {
   const matchResults = ref<Map<string, { homeScore: number; awayScore: number }>>(loadMap(LS_RESULTS))
   const knockoutTeams = ref<Map<string, { homeTeamId: string; awayTeamId: string }>>(loadMap(LS_KO_TEAMS))
   const standings = ref<Record<GroupName, GroupStanding[]>>(initStandings())
+  const apiMatches = ref<Match[]>([])
+  const apiLoaded = ref(false)
 
-  // Recalc standings from persisted results on init
+  // ── Load API data ──────────────────────────────────
+  async function loadApiData() {
+    if (apiLoaded.value) return
+    const matches = await fetchMatchesFromApi()
+    apiMatches.value = matches
+
+    // Merge API scores into matchResults (only for matches without local override)
+    for (const m of matches) {
+      if (m.homeScore !== null && m.awayScore !== null && !matchResults.value.has(m.id)) {
+        matchResults.value.set(m.id, { homeScore: m.homeScore, awayScore: m.awayScore })
+      }
+    }
+    // Merge API team assignments into knockoutTeams
+    for (const m of matches) {
+      if (m.homeTeamId && m.awayTeamId && !knockoutTeams.value.has(m.id)) {
+        knockoutTeams.value.set(m.id, { homeTeamId: m.homeTeamId, awayTeamId: m.awayTeamId })
+      }
+    }
+
+    saveMap(LS_RESULTS, matchResults.value)
+    saveMap(LS_KO_TEAMS, knockoutTeams.value)
+    recalcStandings()
+    fillKnockoutSlots()
+    apiLoaded.value = true
+  }
+
+  // Init standings from persisted results
   ;(function initStandingsFromResults() {
     if (matchResults.value.size === 0) return
     const s = initStandings()
-    for (const m of groupStageMatches) {
+    for (const m of apiMatches.value.length > 0 ? apiMatches.value.filter(m => m.group) : []) {
       const r = matchResults.value.get(m.id)
-      if (!r || m.homeTeamId === null || m.awayTeamId === null) continue
-      const homeS = s[m.group!].find(x => x.teamId === m.homeTeamId)!
-      const awayS = s[m.group!].find(x => x.teamId === m.awayTeamId)!
+      if (!r || !m.homeTeamId || !m.awayTeamId || !m.group) continue
+      const g = m.group as GroupName
+      const homeS = s[g]?.find(x => x.teamId === m.homeTeamId)
+      const awayS = s[g]?.find(x => x.teamId === m.awayTeamId)
+      if (!homeS || !awayS) continue
       homeS.played++; awayS.played++
       homeS.goalsFor += r.homeScore; homeS.goalsAgainst += r.awayScore
       awayS.goalsFor += r.awayScore; awayS.goalsAgainst += r.homeScore
@@ -49,22 +79,22 @@ export const useMatchStore = defineStore('matches', () => {
   })();
 
   // ── Getters ─────────────────────────────────────────
-  const matches = computed(() =>
-    allMatches.map(m => {
+  const matches = computed(() => {
+    const base = apiMatches.value.length > 0 ? apiMatches.value : []
+    return base.map(m => {
       const r = matchResults.value.get(m.id)
       const kt = knockoutTeams.value.get(m.id)
       return {
         ...m,
         homeTeamId: kt?.homeTeamId ?? m.homeTeamId,
         awayTeamId: kt?.awayTeamId ?? m.awayTeamId,
-        homeScore: r?.homeScore ?? null,
-        awayScore: r?.awayScore ?? null,
+        homeScore: r?.homeScore ?? m.homeScore,
+        awayScore: r?.awayScore ?? m.awayScore,
       }
     })
-  )
+  })
 
   const groupStage = computed(() => matches.value.filter(m => m.group !== undefined))
-  const knockoutStage = computed(() => matches.value.filter(m => m.group === undefined))
 
   function getTeam(id: string | null): Team | undefined {
     if (!id) return undefined
@@ -81,11 +111,13 @@ export const useMatchStore = defineStore('matches', () => {
 
   function recalcStandings() {
     const s = initStandings()
-    for (const m of groupStageMatches) {
+    for (const m of apiMatches.value.filter(m => m.group)) {
       const r = matchResults.value.get(m.id)
-      if (!r || m.homeTeamId === null || m.awayTeamId === null) continue
-      const homeS = s[m.group!].find(x => x.teamId === m.homeTeamId)!
-      const awayS = s[m.group!].find(x => x.teamId === m.awayTeamId)!
+      if (!r || !m.homeTeamId || !m.awayTeamId || !m.group) continue
+      const g = m.group as GroupName
+      const homeS = s[g]?.find(x => x.teamId === m.homeTeamId)
+      const awayS = s[g]?.find(x => x.teamId === m.awayTeamId)
+      if (!homeS || !awayS) continue
       homeS.played++; awayS.played++
       homeS.goalsFor += r.homeScore; homeS.goalsAgainst += r.awayScore
       awayS.goalsFor += r.awayScore; awayS.goalsAgainst += r.homeScore
@@ -103,10 +135,11 @@ export const useMatchStore = defineStore('matches', () => {
 
   // ── Knockout auto-fill ──────────────────────────────
   function fillKnockoutSlots() {
+    if (apiMatches.value.length === 0) return
     let changed = false
+    const koMatches = apiMatches.value.filter(m => !m.group)
 
-    for (const m of knockoutMatches) {
-      // Skip if already filled
+    for (const m of koMatches) {
       if (knockoutTeams.value.has(m.id)) continue
 
       const homeId = resolveSource(m.sourceHome)
@@ -115,7 +148,6 @@ export const useMatchStore = defineStore('matches', () => {
         knockoutTeams.value.set(m.id, { homeTeamId: homeId, awayTeamId: awayId })
         changed = true
       } else if (homeId || awayId) {
-        // Partial fill — one side resolved, keep existing or set null
         const existing = knockoutTeams.value.get(m.id) || { homeTeamId: m.homeTeamId || '', awayTeamId: m.awayTeamId || '' }
         const next = {
           homeTeamId: homeId || existing.homeTeamId,
@@ -136,31 +168,34 @@ export const useMatchStore = defineStore('matches', () => {
   function resolveSource(source: string | undefined): string | null {
     if (!source) return null
 
-    // Group qualifier: "A组第1", "B组第2"
-    const gm = source.match(/^([A-P])组第([12])$/)
+    // Group qualifier: "1A" (winner of A), "2B" (runner-up of B)
+    const gm = source.match(/^([12])([A-L])$/)
     if (gm) {
-      const group = gm[1] as GroupName
-      const pos = parseInt(gm[2]) - 1 // 0-indexed
-      // Check if all group matches have results
-      const groupMatches = groupStageMatches.filter(m => m.group === group)
-      const allPlayed = groupMatches.every(m => matchResults.value.has(m.id))
-      if (!allPlayed) return null
+      const pos = parseInt(gm[1]) - 1 // 0-indexed
+      const group = gm[2] as GroupName
+      const gms = apiMatches.value.filter(m => m.group === group)
+      const allPlayed = gms.every(m => matchResults.value.has(m.id))
+      if (!allPlayed || gms.length === 0) return null
       if (standings.value[group] && standings.value[group][pos]) {
         return standings.value[group][pos].teamId
       }
       return null
     }
 
-    // KO qualifier: "W49", "L77"
+    // 3rd place qualifier: "3ABCDF" — skip too complex
+    if (source.startsWith('3')) return null
+
+    // KO qualifier: "W73", "L103"
     const km = source.match(/^([WL])(\d+)$/)
     if (km) {
       const isWinner = km[1] === 'W'
       const koId = `KO-${km[2]}`
       const r = matchResults.value.get(koId)
       if (!r) return null
+      const m = apiMatches.value.find(x => x.id === koId)
       const kt = knockoutTeams.value.get(koId)
-      const homeId = kt?.homeTeamId ?? knockoutMatches.find(m => m.id === koId)?.homeTeamId ?? null
-      const awayId = kt?.awayTeamId ?? knockoutMatches.find(m => m.id === koId)?.awayTeamId ?? null
+      const homeId = kt?.homeTeamId ?? m?.homeTeamId ?? null
+      const awayId = kt?.awayTeamId ?? m?.awayTeamId ?? null
       if (!homeId || !awayId) return null
       if (isWinner) {
         return r.homeScore > r.awayScore ? homeId : (r.homeScore < r.awayScore ? awayId : null)
@@ -172,8 +207,8 @@ export const useMatchStore = defineStore('matches', () => {
     return null
   }
 
-  // Run knockout fill on init to catch anything already resolved
-  fillKnockoutSlots()
-
-  return { matchResults, knockoutTeams, standings, matches, groupStage, knockoutStage, getTeam, setResult, recalcStandings, fillKnockoutSlots }
+  return {
+    matchResults, knockoutTeams, standings, apiMatches, apiLoaded,
+    matches, groupStage, getTeam, setResult, recalcStandings, loadApiData, fillKnockoutSlots,
+  }
 })
