@@ -375,7 +375,9 @@ function getResult(m: Match) {
     min-width: auto;
   }
 
-  .match-kickoff { font-size: 14px; }
+  .kickoff-text { font-size: 14px; }
+
+  .kickoff-weekday { font-size: 11px; }
 
   .match-body { justify-content: center; }
 
