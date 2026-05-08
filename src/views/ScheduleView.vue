@@ -396,4 +396,57 @@ function formatTime(iso: string) {
   color: var(--color-text-dim);
   letter-spacing: 0.1em;
 }
+
+/* ── Mobile ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .schedule-page { padding-top: 24px; }
+
+  .hero-title { font-size: 28px; }
+
+  .hero-desc { font-size: 13px; }
+
+  .group-tab {
+    width: 42px;
+    height: 34px;
+    font-size: 12px;
+  }
+
+  .group-content {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .group-panel { padding: 16px; }
+
+  .panel-title { font-size: 17px; margin-bottom: 12px; }
+
+  .team-card { padding: 10px 12px; gap: 10px; }
+
+  .team-flag { width: 32px; }
+
+  .team-name { font-size: 13px; }
+
+  .team-name-en { font-size: 11px; }
+
+  .match-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 16px;
+  }
+
+  .match-time { min-width: auto; }
+
+  .match-date { font-size: 13px; }
+
+  .match-teams { width: 100%; gap: 12px; }
+
+  .team-label { font-size: 13px; }
+
+  .match-score { min-width: 60px; }
+
+  .score-num { font-size: 17px; }
+
+  .match-flag { width: 22px; }
+}
 </style>
