@@ -24,7 +24,7 @@ const rounds = computed(() => {
   const grouped = new Map<KnockoutRound, Match[]>()
   for (const r of roundOrder) grouped.set(r, [])
 
-  for (const m of store.matches.value.filter(m => !m.group)) {
+  for (const m of store.matches.filter(m => !m.group)) {
     const r = store.matchResults.get(m.id)
     grouped.get(matchRound(m.id))!.push({
       ...m,
