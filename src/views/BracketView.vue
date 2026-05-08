@@ -71,14 +71,18 @@ function confederLabel(teamId: string | null) {
 
 // Which two matches feed into a given match
 const FEEDER_MAP: Record<string, [string, string]> = {
-  'KO-65': ['KO-49', 'KO-50'], 'KO-66': ['KO-51', 'KO-52'],
-  'KO-67': ['KO-53', 'KO-54'], 'KO-68': ['KO-55', 'KO-56'],
-  'KO-69': ['KO-57', 'KO-58'], 'KO-70': ['KO-59', 'KO-60'],
-  'KO-71': ['KO-61', 'KO-62'], 'KO-72': ['KO-63', 'KO-64'],
-  'KO-73': ['KO-65', 'KO-66'], 'KO-74': ['KO-67', 'KO-68'],
-  'KO-75': ['KO-69', 'KO-70'], 'KO-76': ['KO-71', 'KO-72'],
-  'KO-77': ['KO-73', 'KO-74'], 'KO-78': ['KO-75', 'KO-76'],
-  'KO-79': ['KO-77', 'KO-78'], 'KO-80': ['KO-77', 'KO-78'],
+  // R32 → R16 (matches 89-96 fed by pairs of 73-88)
+  'KO-89': ['KO-73', 'KO-74'], 'KO-90': ['KO-75', 'KO-76'],
+  'KO-91': ['KO-77', 'KO-78'], 'KO-92': ['KO-79', 'KO-80'],
+  'KO-93': ['KO-81', 'KO-82'], 'KO-94': ['KO-83', 'KO-84'],
+  'KO-95': ['KO-85', 'KO-86'], 'KO-96': ['KO-87', 'KO-88'],
+  // R16 → QF
+  'KO-97': ['KO-89', 'KO-90'], 'KO-98': ['KO-91', 'KO-92'],
+  'KO-99': ['KO-93', 'KO-94'], 'KO-100': ['KO-95', 'KO-96'],
+  // QF → SF
+  'KO-101': ['KO-97', 'KO-98'], 'KO-102': ['KO-99', 'KO-100'],
+  // SF → 3rd place + Final
+  'KO-103': ['KO-101', 'KO-102'], 'KO-104': ['KO-101', 'KO-102'],
 }
 
 interface LinePath { d: string; played: boolean }
