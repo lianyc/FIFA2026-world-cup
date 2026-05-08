@@ -230,10 +230,27 @@ function getResult(m: Match) {
 }
 
 .match-kickoff {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-family: var(--font-mono);
+}
+
+.kickoff-text {
   font-size: 16px;
   font-weight: 700;
   color: var(--color-gold);
+}
+
+.kickoff-weekday {
+  font-size: 12px;
+  color: var(--color-text-dim);
+  font-weight: 500;
+}
+
+.kickoff-weekday.weekend {
+  color: var(--color-accent-red);
+  font-weight: 700;
 }
 
 /* ── Body / Matchup Card ────────────────────────────── */
