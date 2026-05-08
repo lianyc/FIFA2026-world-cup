@@ -325,4 +325,56 @@ function getResult(m: Match) {
   padding: 1px 6px;
   border-radius: 3px;
 }
+
+/* ── Mobile ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .all-matches-page { padding-top: 24px; }
+
+  .hero-title { font-size: 28px; }
+
+  .hero-desc { font-size: 13px; }
+
+  .timeline { gap: 20px; }
+
+  .day-date { font-size: 17px; }
+
+  .match-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  .match-meta {
+    flex-direction: row;
+    justify-content: space-between;
+    min-width: auto;
+  }
+
+  .match-kickoff { font-size: 14px; }
+
+  .match-body { justify-content: stretch; }
+
+  .matchup-card { width: 100%; }
+
+  .matchup-team { padding: 8px 12px; gap: 6px; }
+
+  .matchup-team.home { flex: 1; }
+
+  .matchup-name { font-size: 13px; }
+
+  .match-flag { width: 24px; }
+
+  .matchup-score { padding: 8px 12px; }
+
+  .score-val { font-size: 17px; }
+
+  .match-footer {
+    flex-direction: row;
+    justify-content: space-between;
+    min-width: auto;
+  }
+
+  .match-venue { font-size: 10px; text-align: left; }
+}
 </style>
