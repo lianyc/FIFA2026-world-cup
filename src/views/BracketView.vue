@@ -1,7 +1,7 @@
 <script lang='ts' setup>
 import { computed, ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useMatchStore } from '@/stores/matches'
-import { knockoutMatches as koMatches, teamMap } from '@/data/worldcup2026'
+import { teamMap } from '@/data/worldcup2026'
 import type { KnockoutRound, Match } from '@/types'
 import { ROUND_LABELS } from '@/types'
 
@@ -11,11 +11,11 @@ const store = useMatchStore()
 
 function matchRound(id: string): KnockoutRound {
   const num = parseInt(id.replace('KO-', ''))
-  if (num >= 49 && num <= 64) return 'roundOf32'
-  if (num >= 65 && num <= 72) return 'roundOf16'
-  if (num >= 73 && num <= 76) return 'quarterFinal'
-  if (num >= 77 && num <= 78) return 'semiFinal'
-  if (num === 79) return 'thirdPlace'
+  if (num >= 73 && num <= 88) return 'roundOf32'
+  if (num >= 89 && num <= 96) return 'roundOf16'
+  if (num >= 97 && num <= 100) return 'quarterFinal'
+  if (num >= 101 && num <= 102) return 'semiFinal'
+  if (num === 103) return 'thirdPlace'
   return 'final'
 }
 
@@ -24,7 +24,7 @@ const rounds = computed(() => {
   const grouped = new Map<KnockoutRound, Match[]>()
   for (const r of roundOrder) grouped.set(r, [])
 
-  for (const m of koMatches) {
+  for (const m of store.matches.value.filter(m => !m.group)) {
     const r = store.matchResults.get(m.id)
     grouped.get(matchRound(m.id))!.push({
       ...m,
