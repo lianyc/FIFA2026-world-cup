@@ -504,9 +504,8 @@ watch([() => store.matchResults, () => store.apiLoaded], () => nextTick(() => ca
 
 .match-time {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 1px;
+  align-items: center;
+  gap: 4px;
   font-family: var(--font-mono);
 }
 
