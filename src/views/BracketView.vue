@@ -229,7 +229,6 @@ const svgStyle = computed(() => {
 })
 
 onMounted(() => {
-  nextTick(() => calcPaths())
   resizeObserver = new ResizeObserver(() => calcPaths())
   if (bracketContainer.value) resizeObserver.observe(bracketContainer.value)
 })
@@ -238,7 +237,7 @@ onUnmounted(() => {
   resizeObserver?.disconnect()
 })
 
-watch([() => store.matchResults, () => store.apiLoaded], () => nextTick(() => calcPaths()), { deep: true })
+watch(columns, () => nextTick(() => calcPaths()), { deep: true })
 </script>
 
 <template>
