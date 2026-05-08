@@ -346,10 +346,27 @@ function formatTime(iso: string) {
 }
 
 .match-date {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-family: var(--font-mono);
+}
+
+.date-text {
   font-size: 15px;
   font-weight: 500;
   color: var(--color-gold);
+}
+
+.date-weekday {
+  font-size: 12px;
+  color: var(--color-text-dim);
+  font-weight: 500;
+}
+
+.date-weekday.weekend {
+  color: var(--color-accent-red);
+  font-weight: 700;
 }
 
 .match-venue {
