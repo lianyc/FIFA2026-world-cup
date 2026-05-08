@@ -7,7 +7,7 @@ import TeamDetailDialog from '@/components/TeamDetailDialog.vue'
 
 const store = useMatchStore()
 
-const groupNames: GroupName[] = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P']
+const groupNames: GroupName[] = ['A','B','C','D','E','F','G','H','I','J','K','L']
 const selectedGroup = ref<GroupName>('A')
 const selectedTeamId = ref<string | null>(null)
 const dialogVisible = ref(false)
