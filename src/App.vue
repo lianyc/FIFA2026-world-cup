@@ -227,6 +227,62 @@ body { min-height: 100vh; }
   text-transform: uppercase;
 }
 
+/* ── Loading Overlay ──────────────────────────────────── */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 24, 22, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.loading-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 36px 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+}
+
+.loading-spinner {
+  width: 48px;
+  height: 48px;
+  position: relative;
+}
+
+.spinner-ring {
+  display: block;
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-gold);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.loading-text {
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--color-gold);
+  letter-spacing: 0.06em;
+}
+
+/* Overlay transition */
+.overlay-fade-enter-active,
+.overlay-fade-leave-active {
+  transition: opacity 0.35s ease;
+}
+.overlay-fade-enter-from,
+.overlay-fade-leave-to {
+  opacity: 0;
+}
+
 /* ── Page Transition ──────────────────────────────────── */
 .page-fade-enter-active, .page-fade-leave-active {
   transition: opacity 0.3s ease, transform 0.3s ease;
