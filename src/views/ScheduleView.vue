@@ -1,7 +1,7 @@
 <script lang='ts' setup>
 import { computed, ref } from 'vue'
 import { useMatchStore } from '@/stores/matches'
-import { groups, teamMap, groupStageMatches as gsMatches } from '@/data/worldcup2026'
+import { groups, teamMap } from '@/data/worldcup2026'
 import type { GroupName } from '@/types'
 import TeamDetailDialog from '@/components/TeamDetailDialog.vue'
 
