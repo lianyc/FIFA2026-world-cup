@@ -159,7 +159,10 @@ function formatTime(iso: string) {
         <div class="match-list">
           <div v-for="m in groupMatches" :key="m.id" class="match-item">
             <div class="match-time">
-              <span class="match-date">{{ formatTime(m.date) }}</span>
+              <span class="match-date">
+                <span class="date-text">{{ formatTime(m.date).text }}</span>
+                <span class="date-weekday" :class="{ weekend: formatTime(m.date).isWeekend }">{{ formatTime(m.date).dayOfWeek }}</span>
+              </span>
               <span class="match-venue">{{ m.city }} · {{ m.venue }}</span>
             </div>
             <div class="match-teams">
