@@ -466,4 +466,42 @@ const positionLabel = (pos: Player['position']) => {
   color: var(--color-text-dim);
   font-size: 15px;
 }
+
+/* ── Mobile ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .squad-dialog.el-dialog {
+    width: 100% !important;
+    margin-top: 0 !important;
+    height: 100vh !important;
+    border-radius: 0 !important;
+  }
+
+  .squad-dialog .el-dialog__header {
+    padding: 14px 16px 0 !important;
+  }
+
+  .squad-dialog .el-dialog__body {
+    padding: 12px 16px 20px !important;
+  }
+
+  .dialog-title { font-size: 18px; }
+
+  .dialog-title-en { font-size: 12px; }
+
+  .formation-viz { padding: 16px 20px; gap: 12px; }
+
+  .formation-row { gap: 16px; }
+
+  .form-dot { width: 28px; height: 28px; }
+
+  .player-card { padding: 6px 10px; gap: 8px; }
+
+  .player-avatar { width: 34px; height: 34px; font-size: 12px; }
+
+  .player-name { font-size: 13px; }
+
+  .player-club { font-size: 11px; }
+
+  .coach-name { font-size: 14px; }
+}
 </style>
