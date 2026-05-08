@@ -148,8 +148,8 @@ onUnmounted(() => {
   resizeObserver?.disconnect()
 })
 
-// Recalculate when match results change
-watch(() => store.matchResults, () => nextTick(() => calcPaths()), { deep: true })
+// Recalculate when match results or API data change
+watch([() => store.matchResults, () => store.apiLoaded], () => nextTick(() => calcPaths()), { deep: true })
 </script>
 
 <template>
