@@ -1,8 +1,14 @@
 <script lang='ts' setup>
 import { useRouter, useRoute } from 'vue-router'
+import { onMounted } from 'vue'
+import { useMatchStore } from '@/stores/matches'
 
 const router = useRouter()
 const route = useRoute()
+
+onMounted(() => {
+  useMatchStore().loadApiData()
+})
 
 const navItems = [
   { name: 'schedule', label: '赛程表', path: '/' },
