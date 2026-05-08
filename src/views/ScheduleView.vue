@@ -416,7 +416,7 @@ function formatTime(iso: string) {
     gap: 16px;
   }
 
-  .group-panel { padding: 16px; }
+  .group-panel { padding: 16px; overflow-x: auto; }
 
   .panel-title { font-size: 17px; margin-bottom: 12px; }
 
@@ -430,23 +430,32 @@ function formatTime(iso: string) {
 
   .match-item {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 10px;
     padding: 12px 16px;
   }
 
-  .match-time { min-width: auto; }
+  .match-time {
+    min-width: auto;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 8px;
+  }
 
   .match-date { font-size: 13px; }
 
-  .match-teams { width: 100%; gap: 12px; }
+  .match-teams { width: 100%; gap: 8px; }
+
+  .match-team { gap: 6px; }
 
   .team-label { font-size: 13px; }
 
-  .match-score { min-width: 60px; }
+  .match-score { min-width: auto; gap: 4px; }
 
   .score-num { font-size: 17px; }
 
   .match-flag { width: 22px; }
+
+  .match-venue { font-size: 10px; text-align: right; }
 }
 </style>
