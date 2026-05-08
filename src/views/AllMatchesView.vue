@@ -34,7 +34,11 @@ const dayGroups = computed<DayGroup[]>(() => {
 
 function formatTime(iso: string) {
   const d = new Date(iso)
-  return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`
+  const dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+  const text = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`
+  const dayOfWeek = dayNames[d.getDay()]
+  const isWeekend = d.getDay() === 0 || d.getDay() === 6
+  return { text, dayOfWeek, isWeekend }
 }
 
 function roundLabel(m: Match): string {
