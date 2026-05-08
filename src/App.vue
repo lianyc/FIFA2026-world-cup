@@ -177,6 +177,26 @@ body { min-height: 100vh; }
   font-weight: 600;
 }
 
+.refresh-btn {
+  padding: 10px 14px;
+  margin-left: 4px;
+}
+
+.refresh-icon {
+  display: inline-block;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.refresh-icon.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 /* ── Main ─────────────────────────────────────────────── */
 .app-main {
   flex: 1;
