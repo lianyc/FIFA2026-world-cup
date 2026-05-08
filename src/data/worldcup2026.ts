@@ -126,7 +126,9 @@ const venueNames: Record<string, string> = {
 
 // ── API data fetcher & transform ─────────────────────────────
 
-const API_URL = 'https://fixturedownload.com/feed/json/fifa-world-cup-2026'
+const API_URL = import.meta.env.DEV
+  ? '/api/fixtures'
+  : 'https://fixturedownload.com/feed/json/fifa-world-cup-2026'
 
 interface ApiMatch {
   MatchNumber: number
