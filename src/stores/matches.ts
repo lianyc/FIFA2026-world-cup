@@ -208,8 +208,12 @@ export const useMatchStore = defineStore('matches', () => {
     return null
   }
 
+  async function refreshData() {
+    await loadApiData(true)
+  }
+
   return {
     matchResults, knockoutTeams, standings, apiMatches, apiLoaded,
-    matches, groupStage, getTeam, setResult, recalcStandings, loadApiData, fillKnockoutSlots,
+    matches, groupStage, getTeam, setResult, recalcStandings, loadApiData, refreshData, fillKnockoutSlots,
   }
 })
