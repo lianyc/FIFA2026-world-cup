@@ -279,7 +279,10 @@ watch([() => store.matchResults, () => store.apiLoaded], () => nextTick(() => ca
             >
               <div class="match-header">
                 <span class="match-id">M{{ m.id.replace('KO-', '') }}</span>
-                <span class="match-time">{{ formatDate(m.date) }}</span>
+                <span class="match-time" :class="{ weekend: formatDate(m.date).isWeekend }">
+                  <span class="time-text">{{ formatDate(m.date).text }}</span>
+                  <span class="time-weekday">{{ formatDate(m.date).dayOfWeek }}</span>
+                </span>
               </div>
 
               <div class="match-slot">
