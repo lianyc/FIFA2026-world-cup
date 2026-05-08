@@ -340,13 +340,13 @@ watch([() => store.matchResults, () => store.apiLoaded], () => nextTick(() => ca
   gap: 16px;
 }
 
-/* Match spacing per round — each round is half the matches of the previous */
-.round-roundOf32 .round-matches { gap: 6px; }
-.round-roundOf16 .round-matches { gap: 18px; }
-.round-quarterFinal .round-matches { gap: 44px; }
-.round-semiFinal .round-matches { gap: 100px; }
+/* Match spacing per round — 16→8→4→2→1 */
+.round-roundOf32 .round-matches { gap: 4px; }
+.round-roundOf16 .round-matches { gap: 12px; }
+.round-quarterFinal .round-matches { gap: 32px; }
+.round-semiFinal .round-matches { gap: 80px; }
 .round-thirdPlace .round-matches,
-.round-final .round-matches { gap: 36px; }
+.round-final .round-matches { gap: 24px; }
 
 /* ── Match Card ──────────────────────────────────────── */
 .bracket-match {
