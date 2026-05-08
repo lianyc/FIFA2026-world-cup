@@ -93,33 +93,35 @@ function getResult(m: Match) {
             </div>
 
             <div class="match-body">
-              <div class="match-side home">
-                <img
-                  v-if="m.homeTeamId"
-                  :src="`https://flagcdn.com/w40/${teamMap.get(m.homeTeamId)!.flag}.png`"
-                  class="match-flag"
-                  loading="lazy"
-                />
-                <span class="side-name">{{ m.homeTeamId ? teamMap.get(m.homeTeamId)!.nameZh : (m.sourceHome || '待定') }}</span>
-              </div>
+              <div class="matchup-card">
+                <div class="matchup-team home">
+                  <img
+                    v-if="m.homeTeamId"
+                    :src="`https://flagcdn.com/w40/${teamMap.get(m.homeTeamId)!.flag}.png`"
+                    class="match-flag"
+                    loading="lazy"
+                  />
+                  <span class="matchup-name">{{ m.homeTeamId ? teamMap.get(m.homeTeamId)!.nameZh : (m.sourceHome || '待定') }}</span>
+                </div>
 
-              <div class="match-score-box">
-                <template v-if="getResult(m)">
-                  <span class="score-val">{{ getResult(m)!.homeScore }}</span>
-                  <span class="score-sep">:</span>
-                  <span class="score-val">{{ getResult(m)!.awayScore }}</span>
-                </template>
-                <span v-else class="score-tbd">VS</span>
-              </div>
+                <div class="matchup-score">
+                  <template v-if="getResult(m)">
+                    <span class="score-val">{{ getResult(m)!.homeScore }}</span>
+                    <span class="score-colon">:</span>
+                    <span class="score-val">{{ getResult(m)!.awayScore }}</span>
+                  </template>
+                  <span v-else class="score-vs">VS</span>
+                </div>
 
-              <div class="match-side away">
-                <img
-                  v-if="m.awayTeamId"
-                  :src="`https://flagcdn.com/w40/${teamMap.get(m.awayTeamId)!.flag}.png`"
-                  class="match-flag"
-                  loading="lazy"
-                />
-                <span class="side-name">{{ m.awayTeamId ? teamMap.get(m.awayTeamId)!.nameZh : (m.sourceAway || '待定') }}</span>
+                <div class="matchup-team away">
+                  <img
+                    v-if="m.awayTeamId"
+                    :src="`https://flagcdn.com/w40/${teamMap.get(m.awayTeamId)!.flag}.png`"
+                    class="match-flag"
+                    loading="lazy"
+                  />
+                  <span class="matchup-name">{{ m.awayTeamId ? teamMap.get(m.awayTeamId)!.nameZh : (m.sourceAway || '待定') }}</span>
+                </div>
               </div>
             </div>
 
@@ -227,29 +229,40 @@ function getResult(m: Match) {
   color: var(--color-gold);
 }
 
-/* ── Body ───────────────────────────────────────────── */
+/* ── Body / Matchup Card ────────────────────────────── */
 .match-body {
   flex: 1;
   display: flex;
-  align-items: center;
-  gap: 16px;
+  justify-content: center;
 }
 
-.match-side {
-  flex: 1;
+.matchup-card {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0;
+  overflow: hidden;
+}
+
+.matchup-team {
   display: flex;
   align-items: center;
   gap: 10px;
+  padding: 10px 18px;
   min-width: 0;
 }
 
-.match-side.home { justify-content: flex-end; text-align: right; flex-direction: row-reverse; }
-.match-side.away { justify-content: flex-start; }
+.matchup-team.home { flex-direction: row; }
+
+.matchup-team.away { flex-direction: row-reverse; }
 
 .match-flag { width: 30px; height: auto; border-radius: 3px; flex-shrink: 0; box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
 
-.side-name {
-  font-size: 14px;
+.matchup-name {
+  font-size: 15px;
   font-weight: 600;
   color: var(--color-text);
   white-space: nowrap;
@@ -258,12 +271,14 @@ function getResult(m: Match) {
 }
 
 /* ── Score ──────────────────────────────────────────── */
-.match-score-box {
+.matchup-score {
   display: flex;
   align-items: center;
   gap: 6px;
-  min-width: 64px;
+  padding: 10px 16px;
+  background: var(--color-border);
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .score-val {
@@ -273,17 +288,17 @@ function getResult(m: Match) {
   color: var(--color-gold-bright);
 }
 
-.score-sep {
+.score-colon {
   font-size: 16px;
   color: var(--color-text-dim);
 }
 
-.score-tbd {
+.score-vs {
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: 12px;
   color: var(--color-text-dim);
   letter-spacing: 0.1em;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 /* ── Footer ─────────────────────────────────────────── */
