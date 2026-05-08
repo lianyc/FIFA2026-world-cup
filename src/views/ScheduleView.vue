@@ -466,7 +466,9 @@ function formatTime(iso: string) {
     gap: 8px;
   }
 
-  .match-date { font-size: 13px; }
+  .date-text { font-size: 13px; }
+
+  .date-weekday { font-size: 11px; }
 
   .match-teams { width: 100%; gap: 8px; }
 
