@@ -12,5 +12,13 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
+    proxy: {
+      '/api/fixtures': {
+        target: 'https://fixturedownload.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/fixtures/, '/feed/json/fifa-world-cup-2026'),
+        headers: { 'User-Agent': 'FIFA2026-App/1.0' },
+      },
+    },
   },
 })
