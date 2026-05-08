@@ -63,23 +63,21 @@ export const teamMap = new Map(teams.map(t => [t.id, t]))
 
 // Name → ID lookup for API data mapping
 const nameToId: Record<string, string> = {}
+const aliases: Record<string, string> = {
+  'Czechia': 'CZE',
+  'Korea Republic': 'KOR',
+  'United States': 'USA',
+  'IR Iran': 'IRN',
+  "Côte d'Ivoire": 'CIV',
+  'Türkiye': 'TUR',
+  'Cabo Verde': 'CPV',
+  'Congo DR': 'COD',
+  'Bosnia and Herzegovina': 'BIH',
+  'South Africa': 'RSA',
+  'Saudi Arabia': 'KSA',
+  'New Zealand': 'NZL',
+}
 for (const t of teams) {
-  nameToId[t.name] = t.id
-  // API uses some different names
-  const aliases: Record<string, string> = {
-    'Czechia': 'CZE',
-    'Korea Republic': 'KOR',
-    'United States': 'USA',
-    'IR Iran': 'IRN',
-    'Côte d\'Ivoire': 'CIV',
-    'Türkiye': 'TUR',
-    'Cabo Verde': 'CPV',
-    'Congo DR': 'COD',
-    'Bosnia and Herzegovina': 'BIH',
-    'South Africa': 'RSA',
-    'Saudi Arabia': 'KSA',
-    'New Zealand': 'NZL',
-  }
   nameToId[t.name] = t.id
 }
 for (const [name, id] of Object.entries(aliases)) {
