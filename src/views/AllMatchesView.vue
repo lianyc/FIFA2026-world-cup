@@ -86,7 +86,10 @@ function getResult(m: Match) {
             :class="['match-row', { played: getResult(m) }]"
           >
             <div class="match-meta">
-              <span class="match-kickoff">{{ formatTime(m.date) }}</span>
+              <span class="match-kickoff">
+                <span class="kickoff-text">{{ formatTime(m.date).text }}</span>
+                <span class="kickoff-weekday" :class="{ weekend: formatTime(m.date).isWeekend }">{{ formatTime(m.date).dayOfWeek }}</span>
+              </span>
               <el-tag
                 size="small"
                 :type="roundVariant(m)"
