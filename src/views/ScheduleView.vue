@@ -59,7 +59,11 @@ function formatTime(iso: string) {
   const dd = d.getDate().toString().padStart(2, '0')
   const hh = d.getHours().toString().padStart(2, '0')
   const min = d.getMinutes().toString().padStart(2, '0')
-  return `${mm}-${dd} ${hh}:${min}`
+  const dayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+  const text = `${mm}-${dd} ${hh}:${min}`
+  const dayOfWeek = dayNames[d.getDay()]
+  const isWeekend = d.getDay() === 0 || d.getDay() === 6
+  return { text, dayOfWeek, isWeekend }
 }
 </script>
 
