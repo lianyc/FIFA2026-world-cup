@@ -353,13 +353,13 @@ function getResult(m: Match) {
 
   .match-kickoff { font-size: 14px; }
 
-  .match-body { justify-content: stretch; }
-
-  .matchup-card { width: 100%; }
+  .match-body { justify-content: center; }
 
   .matchup-team { padding: 8px 12px; gap: 6px; }
 
-  .matchup-team.home { flex: 1; }
+  .matchup-team.home { justify-content: flex-end; }
+
+  .matchup-team.away { justify-content: flex-start; }
 
   .matchup-name { font-size: 13px; }
 
