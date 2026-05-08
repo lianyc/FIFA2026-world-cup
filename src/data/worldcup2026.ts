@@ -289,8 +289,9 @@ function buildFallbackMatches(): Match[] {
 
 // ── Static exports (fallback) ─────────────────────────────────
 
-export const groupStageMatches: Match[] = buildFallbackMatches().filter(m => m.group)
-export const knockoutMatches: Match[] = buildFallbackMatches().filter(m => !m.group)
+const fallbackMatches = buildFallbackMatches()
+export const groupStageMatches: Match[] = fallbackMatches.filter(m => m.group)
+export const knockoutMatches: Match[] = fallbackMatches.filter(m => !m.group)
 export const allMatches: Match[] = [...groupStageMatches, ...knockoutMatches]
 export const matchMap = new Map(allMatches.map(m => [m.id, m]))
 
