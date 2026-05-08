@@ -12,7 +12,7 @@ interface DayGroup {
 }
 
 const sorted = computed<Match[]>(() =>
-  [...store.matches.value].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+  [...store.matches].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 )
 
 const dayGroups = computed<DayGroup[]>(() => {
