@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:sportscore.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(curl -s --max-time 10 \"https://sportscore.com/api/v1/sports/1/events/date/2026-06-14?page=1\")"
+    ]
+  }
+}
