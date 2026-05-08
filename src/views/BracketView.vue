@@ -3,11 +3,31 @@ import { computed, ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useMatchStore } from '@/stores/matches'
 import { teamMap } from '@/data/worldcup2026'
 import type { KnockoutRound, Match } from '@/types'
-import { ROUND_LABELS } from '@/types'
 
 const store = useMatchStore()
 
-// ── Round classification ──────────────────────────────
+// ── Left / Right split ─────────────────────────────────────
+
+// Which half does each KO match belong to?
+// Left: 73-80, 89-92, 97-98, 101
+// Right: 81-88, 93-96, 99-100, 102
+// Center: 103, 104
+function matchSide(id: string): 'left' | 'right' | 'center' {
+  const num = parseInt(id.replace('KO-', ''))
+  if (num === 103 || num === 104) return 'center'
+  // R32: 73-80 left, 81-88 right
+  if (num >= 73 && num <= 80) return 'left'
+  if (num >= 81 && num <= 88) return 'right'
+  // R16: 89-92 left, 93-96 right
+  if (num >= 89 && num <= 92) return 'left'
+  if (num >= 93 && num <= 96) return 'right'
+  // QF: 97-98 left, 99-100 right
+  if (num === 97 || num === 98) return 'left'
+  if (num === 99 || num === 100) return 'right'
+  // SF: 101 left, 102 right
+  if (num === 101) return 'left'
+  return 'right'
+}
 
 function matchRound(id: string): KnockoutRound {
   const num = parseInt(id.replace('KO-', ''))
@@ -19,21 +39,46 @@ function matchRound(id: string): KnockoutRound {
   return 'final'
 }
 
-const rounds = computed(() => {
-  const roundOrder: KnockoutRound[] = ['roundOf32', 'roundOf16', 'quarterFinal', 'semiFinal', 'thirdPlace', 'final']
-  const grouped = new Map<KnockoutRound, Match[]>()
-  for (const r of roundOrder) grouped.set(r, [])
+interface RoundColumn {
+  key: string
+  label: string
+  matches: Match[]
+  side: 'left' | 'right' | 'center'
+}
 
-  for (const m of store.matches.filter(m => !m.group)) {
-    const r = store.matchResults.get(m.id)
-    grouped.get(matchRound(m.id))!.push({
-      ...m,
-      round: matchRound(m.id),
-      homeScore: r?.homeScore ?? null,
-      awayScore: r?.awayScore ?? null,
-    })
+const columns = computed<RoundColumn[]>(() => {
+  const koMatches = store.matches.filter(m => !m.group)
+  const roundOrder: KnockoutRound[] = ['roundOf32', 'roundOf16', 'quarterFinal', 'semiFinal', 'thirdPlace', 'final']
+
+  const result: RoundColumn[] = []
+
+  // Left side columns
+  for (const r of roundOrder) {
+    const ms = koMatches.filter(m => matchRound(m.id) === r && matchSide(m.id) === 'left')
+    if (ms.length > 0) {
+      const label = r === 'roundOf32' ? '1/16 决赛' : r === 'roundOf16' ? '1/8 决赛' : r === 'quarterFinal' ? '1/4 决赛' : r === 'semiFinal' ? '半决赛' : ''
+      // Sort to maintain vertical order: 73 above 74, 75 above 76, etc.
+      ms.sort((a, b) => parseInt(a.id.replace('KO-', '')) - parseInt(b.id.replace('KO-', '')))
+      result.push({ key: `left-${r}`, label, matches: ms, side: 'left' })
+    }
   }
-  return roundOrder.map(r => ({ key: r, label: ROUND_LABELS[r], matches: grouped.get(r)! }))
+
+  // Center
+  const centerMs = koMatches.filter(m => matchSide(m.id) === 'center')
+  centerMs.sort((a, b) => parseInt(a.id.replace('KO-', '')) - parseInt(b.id.replace('KO-', '')))
+  result.push({ key: 'center', label: '决赛 / 三四名', matches: centerMs, side: 'center' })
+
+  // Right side columns (reversed: SF → R32, mirror of left)
+  for (const r of [...roundOrder].reverse()) {
+    const ms = koMatches.filter(m => matchRound(m.id) === r && matchSide(m.id) === 'right')
+    if (ms.length > 0) {
+      const label = r === 'semiFinal' ? '半决赛' : r === 'quarterFinal' ? '1/4 决赛' : r === 'roundOf16' ? '1/8 决赛' : r === 'roundOf32' ? '1/16 决赛' : ''
+      ms.sort((a, b) => parseInt(a.id.replace('KO-', '')) - parseInt(b.id.replace('KO-', '')))
+      result.push({ key: `right-${r}`, label, matches: ms, side: 'right' })
+    }
+  }
+
+  return result
 })
 
 function getResult(id: string) {
@@ -67,21 +112,16 @@ function confederLabel(teamId: string | null) {
   return map[t.confederation] || ''
 }
 
-// ── Bracket connection lines (SVG) ────────────────────
+// ── SVG bracket lines ──────────────────────────────────────
 
-// Which two matches feed into a given match
 const FEEDER_MAP: Record<string, [string, string]> = {
-  // R32 → R16 (matches 89-96 fed by pairs of 73-88)
   'KO-89': ['KO-73', 'KO-74'], 'KO-90': ['KO-75', 'KO-76'],
   'KO-91': ['KO-77', 'KO-78'], 'KO-92': ['KO-79', 'KO-80'],
   'KO-93': ['KO-81', 'KO-82'], 'KO-94': ['KO-83', 'KO-84'],
   'KO-95': ['KO-85', 'KO-86'], 'KO-96': ['KO-87', 'KO-88'],
-  // R16 → QF
   'KO-97': ['KO-89', 'KO-90'], 'KO-98': ['KO-91', 'KO-92'],
   'KO-99': ['KO-93', 'KO-94'], 'KO-100': ['KO-95', 'KO-96'],
-  // QF → SF
   'KO-101': ['KO-97', 'KO-98'], 'KO-102': ['KO-99', 'KO-100'],
-  // SF → 3rd place + Final
   'KO-103': ['KO-101', 'KO-102'], 'KO-104': ['KO-101', 'KO-102'],
 }
 
@@ -107,9 +147,51 @@ function calcPaths() {
     const botR = botEl.getBoundingClientRect()
     const destR = destEl.getBoundingClientRect()
 
-    const x1 = topR.right - containerRect.left
-    const x2 = destR.left - containerRect.left
-    const midX = (x1 + x2) / 2
+    const side = matchSide(destId)
+
+    // For center connections: SF feeds into center from both sides
+    const isCenterDest = side === 'center'
+    const isLeft = matchSide(topId) === 'left'
+
+    // Feeder edge: left side uses right edge of feeder, right side uses left edge
+    let x1: number
+    let x2: number
+    let midX: number
+
+    if (isCenterDest) {
+      // Left SF (101) → right edge → center left edge
+      // Right SF (102) → left edge → center right edge
+      if (destId === 'KO-103' || destId === 'KO-104') {
+        // Top feeder is left SF (101), bottom feeder is right SF (102)
+        // Top line: SF left right-edge → center left-edge
+        const x1Top = topR.right - containerRect.left
+        const x1Bot = botR.left - containerRect.left
+        const xDestLeft = destR.left - containerRect.left
+        const xDestRight = destR.right - containerRect.left
+        const yTop = topR.top + topR.height / 2 - containerRect.top
+        const yBot = botR.top + botR.height / 2 - containerRect.top
+        const yMid = destR.top + destR.height / 2 - containerRect.top
+
+        const midXLeft = (x1Top + xDestLeft) / 2
+        const midXRight = (x1Bot + xDestRight) / 2
+
+        // Top feeder (left SF) → center
+        paths.push({ d: `M ${x1Top} ${yTop} L ${midXLeft} ${yTop} L ${midXLeft} ${yMid} L ${xDestLeft} ${yMid}`, played: !!store.matchResults.get(topId) })
+        // Bottom feeder (right SF) → center
+        paths.push({ d: `M ${x1Bot} ${yBot} L ${midXRight} ${yBot} L ${midXRight} ${yMid} L ${xDestRight} ${yMid}`, played: !!store.matchResults.get(botId) })
+      }
+      continue
+    }
+
+    if (isLeft) {
+      x1 = topR.right - containerRect.left
+      x2 = destR.left - containerRect.left
+    } else {
+      x1 = topR.left - containerRect.left
+      x2 = destR.right - containerRect.left
+    }
+    midX = (x1 + x2) / 2
+
     const yTop = topR.top + topR.height / 2 - containerRect.top
     const yBot = botR.top + botR.height / 2 - containerRect.top
     const yMid = destR.top + destR.height / 2 - containerRect.top
@@ -117,14 +199,19 @@ function calcPaths() {
     const topPlayed = !!store.matchResults.get(topId)
     const botPlayed = !!store.matchResults.get(botId)
 
-    // Horizontal from top feeder to mid-point
-    paths.push({ d: `M ${x1} ${yTop} L ${midX} ${yTop}`, played: topPlayed })
-    // Horizontal from bottom feeder to mid-point
-    paths.push({ d: `M ${x1} ${yBot} L ${midX} ${yBot}`, played: botPlayed })
-    // Vertical merge
-    paths.push({ d: `M ${midX} ${yTop} L ${midX} ${yBot}`, played: topPlayed && botPlayed })
-    // Horizontal from merge to destination
-    paths.push({ d: `M ${midX} ${yMid} L ${x2} ${yMid}`, played: !!store.matchResults.get(destId) })
+    if (isLeft) {
+      // Left side: feeders point right, destination opens left
+      paths.push({ d: `M ${x1} ${yTop} L ${midX} ${yTop}`, played: topPlayed })
+      paths.push({ d: `M ${x1} ${yBot} L ${midX} ${yBot}`, played: botPlayed })
+      paths.push({ d: `M ${midX} ${yTop} L ${midX} ${yBot}`, played: topPlayed && botPlayed })
+      paths.push({ d: `M ${midX} ${yMid} L ${x2} ${yMid}`, played: !!store.matchResults.get(destId) })
+    } else {
+      // Right side: feeders point left, destination opens right
+      paths.push({ d: `M ${x1} ${yTop} L ${midX} ${yTop}`, played: topPlayed })
+      paths.push({ d: `M ${x1} ${yBot} L ${midX} ${yBot}`, played: botPlayed })
+      paths.push({ d: `M ${midX} ${yTop} L ${midX} ${yBot}`, played: topPlayed && botPlayed })
+      paths.push({ d: `M ${midX} ${yMid} L ${x2} ${yMid}`, played: !!store.matchResults.get(destId) })
+    }
   }
 
   svgPaths.value = paths
@@ -137,9 +224,7 @@ const svgStyle = computed(() => {
 })
 
 onMounted(() => {
-  nextTick(() => {
-    calcPaths()
-  })
+  nextTick(() => calcPaths())
   resizeObserver = new ResizeObserver(() => calcPaths())
   if (bracketContainer.value) resizeObserver.observe(bracketContainer.value)
 })
@@ -148,7 +233,6 @@ onUnmounted(() => {
   resizeObserver?.disconnect()
 })
 
-// Recalculate when match results or API data change
 watch([() => store.matchResults, () => store.apiLoaded], () => nextTick(() => calcPaths()), { deep: true })
 </script>
 
@@ -161,7 +245,6 @@ watch([() => store.matchResults, () => store.apiLoaded], () => nextTick(() => ca
 
     <div class="bracket-scroll">
       <div ref="bracketContainer" class="bracket-grid">
-        <!-- SVG overlay for bracket lines -->
         <svg class="bracket-lines" :style="svgStyle">
           <path
             v-for="(p, i) in svgPaths"
@@ -170,19 +253,21 @@ watch([() => store.matchResults, () => store.apiLoaded], () => nextTick(() => ca
             :stroke="p.played ? 'var(--color-accent-green)' : 'var(--color-border-strong)'"
             stroke-width="2"
             fill="none"
-            :opacity="p.played ? 0.85 : 0.5"
+            :opacity="p.played ? 0.85 : 0.45"
+            stroke-linecap="round"
+            stroke-linejoin="round"
           />
         </svg>
 
         <div
-          v-for="round in rounds"
-          :key="round.key"
-          :class="['bracket-round', `round-${round.key}`]"
+          v-for="col in columns"
+          :key="col.key"
+          :class="['bracket-column', `side-${col.side}`, `col-${col.key}`]"
         >
-          <h3 class="round-title">{{ round.label }}</h3>
-          <div class="round-matches">
+          <h3 v-if="col.label" class="column-title">{{ col.label }}</h3>
+          <div class="column-matches">
             <div
-              v-for="m in round.matches"
+              v-for="m in col.matches"
               :key="m.id"
               :data-match="m.id"
               :class="['bracket-match', { played: getResult(m.id) }]"
@@ -192,7 +277,6 @@ watch([() => store.matchResults, () => store.apiLoaded], () => nextTick(() => ca
                 <span class="match-time">{{ formatDate(m.date) }}</span>
               </div>
 
-              <!-- Home -->
               <div class="match-slot">
                 <template v-if="m.homeTeamId">
                   <div class="slot-team">
@@ -221,7 +305,6 @@ watch([() => store.matchResults, () => store.apiLoaded], () => nextTick(() => ca
                 <span class="divider-line"></span>
               </div>
 
-              <!-- Away -->
               <div class="match-slot">
                 <template v-if="m.awayTeamId">
                   <div class="slot-team">
@@ -249,7 +332,6 @@ watch([() => store.matchResults, () => store.apiLoaded], () => nextTick(() => ca
       </div>
     </div>
 
-    <!-- Legend -->
     <div class="legend">
       <h4 class="legend-title">洲际赛区</h4>
       <div class="legend-items">
@@ -272,7 +354,6 @@ watch([() => store.matchResults, () => store.apiLoaded], () => nextTick(() => ca
 <style scoped>
 .bracket-page { padding-top: 40px; }
 
-/* ── Hero ────────────────────────────────────────────── */
 .page-hero { margin-bottom: 32px; }
 
 .hero-title {
@@ -301,9 +382,11 @@ watch([() => store.matchResults, () => store.apiLoaded], () => nextTick(() => ca
 
 .bracket-grid {
   display: flex;
-  gap: 32px;
+  gap: 28px;
   min-width: max-content;
   position: relative;
+  align-items: stretch;
+  justify-content: center;
 }
 
 /* SVG overlay */
@@ -315,24 +398,27 @@ watch([() => store.matchResults, () => store.apiLoaded], () => nextTick(() => ca
   z-index: 0;
 }
 
-.bracket-round {
+/* ── Columns ─────────────────────────────────────────── */
+.bracket-column {
   display: flex;
   flex-direction: column;
   position: relative;
   z-index: 1;
 }
 
-.round-title {
+.column-title {
   font-family: var(--font-display);
-  font-size: 15px;
+  font-size: 14px;
   color: var(--color-gold);
   letter-spacing: 0.06em;
   margin-bottom: 10px;
   padding: 4px 0;
   flex-shrink: 0;
+  text-align: center;
+  white-space: nowrap;
 }
 
-.round-matches {
+.column-matches {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
@@ -340,17 +426,24 @@ watch([() => store.matchResults, () => store.apiLoaded], () => nextTick(() => ca
   gap: 16px;
 }
 
-/* Match spacing per round — 16→8→4→2→1 */
-.round-roundOf32 .round-matches { gap: 4px; }
-.round-roundOf16 .round-matches { gap: 12px; }
-.round-quarterFinal .round-matches { gap: 32px; }
-.round-semiFinal .round-matches { gap: 80px; }
-.round-thirdPlace .round-matches,
-.round-final .round-matches { gap: 24px; }
+/* Specific column spacing — doubling each round */
+.col-left-roundOf32 .column-matches,
+.col-right-roundOf32 .column-matches { gap: 4px; }
+
+.col-left-roundOf16 .column-matches,
+.col-right-roundOf16 .column-matches { gap: 14px; }
+
+.col-left-quarterFinal .column-matches,
+.col-right-quarterFinal .column-matches { gap: 36px; }
+
+.col-left-semiFinal .column-matches,
+.col-right-semiFinal .column-matches { gap: 80px; }
+
+.col-center .column-matches { gap: 20px; justify-content: center; }
 
 /* ── Match Card ──────────────────────────────────────── */
 .bracket-match {
-  width: 226px;
+  width: 210px;
   background: var(--color-surface);
   border: 1.5px solid var(--color-border-strong);
   border-radius: var(--radius-lg);
@@ -378,6 +471,11 @@ watch([() => store.matchResults, () => store.apiLoaded], () => nextTick(() => ca
 
 .bracket-match:hover::before { opacity: 1; }
 .bracket-match.played::before { background: var(--color-accent-green); opacity: 1; }
+
+/* Center final: slightly wider + gold accent */
+.col-center .bracket-match {
+  width: 230px;
+}
 
 .match-header {
   display: flex;
