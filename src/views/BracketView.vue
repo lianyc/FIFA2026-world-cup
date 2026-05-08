@@ -503,10 +503,28 @@ watch([() => store.matchResults, () => store.apiLoaded], () => nextTick(() => ca
 }
 
 .match-time {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
   font-family: var(--font-mono);
+}
+
+.match-time .time-text {
+  font-size: 13px;
+  color: var(--color-gold);
+  font-weight: 700;
+}
+
+.match-time .time-weekday {
   font-size: 11px;
   color: var(--color-text-dim);
   font-weight: 500;
+}
+
+.match-time.weekend .time-weekday {
+  color: var(--color-accent-red);
+  font-weight: 700;
 }
 
 /* ── Match Slots ─────────────────────────────────────── */
