@@ -27,9 +27,10 @@ export const useMatchStore = defineStore('matches', () => {
   const apiLoaded = ref(false)
 
   // ── Load API data ──────────────────────────────────
-  async function loadApiData() {
-    if (apiLoaded.value) return
-    const matches = await fetchMatchesFromApi()
+  async function loadApiData(force = false) {
+    if (apiLoaded.value && !force) return
+    apiLoaded.value = false
+    const matches = await fetchMatchesFromApi(force)
     apiMatches.value = matches
 
     // Merge API scores into matchResults (only for matches without local override)
