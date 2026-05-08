@@ -64,6 +64,18 @@ function navigate(name: string) {
       <router-view />
     </main>
 
+    <!-- Loading overlay -->
+    <Transition name="overlay-fade">
+      <div v-if="!store.apiLoaded || refreshing" class="loading-overlay">
+        <div class="loading-card">
+          <div class="loading-spinner">
+            <span class="spinner-ring"></span>
+          </div>
+          <span class="loading-text">更新比赛数据...</span>
+        </div>
+      </div>
+    </Transition>
+
     <footer class="app-footer">
       <span>48 支球队 &middot; 16 座城市 &middot; 3 个国家 &middot; 1 座奖杯</span>
       <span class="footer-time">所有时间均为北京时间 (UTC+8)</span>
