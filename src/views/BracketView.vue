@@ -229,6 +229,7 @@ const svgStyle = computed(() => {
 })
 
 onMounted(() => {
+  nextTick(() => calcPaths())
   resizeObserver = new ResizeObserver(() => calcPaths())
   if (bracketContainer.value) resizeObserver.observe(bracketContainer.value)
 })
