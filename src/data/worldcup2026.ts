@@ -245,8 +245,9 @@ function buildFallbackMatches(): Match[] {
   let koDay = 28
   for (let i = 0; i < r32Sources.length; i++) {
     id++
-    const start = new Date(`2026-06-${koDay}T00:00:00+08:00`)
-    start.setHours(10, 0, 0, 0)
+    const m = koDay > 30 ? 7 : 6
+    const d = koDay > 30 ? koDay - 30 : koDay
+    const start = new Date(`2026-${m.toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}T10:00:00+08:00`)
     matches.push({
       id: `KO-${id.toString().padStart(2, '0')}`,
       homeTeamId: null, awayTeamId: null, homeScore: null, awayScore: null,
