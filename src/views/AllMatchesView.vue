@@ -44,20 +44,20 @@ function formatTime(iso: string) {
 function roundLabel(m: Match): string {
   if (m.group) return `${m.group} 组`
   const num = parseInt(m.id.replace('KO-', ''))
-  if (num >= 49 && num <= 64) return '32 强'
-  if (num >= 65 && num <= 72) return '16 强'
-  if (num >= 73 && num <= 76) return '8 强'
-  if (num >= 77 && num <= 78) return '半决赛'
-  if (num === 79) return '三四名'
+  if (num >= 73 && num <= 88) return '1/16 决赛'
+  if (num >= 89 && num <= 96) return '1/8 决赛'
+  if (num >= 97 && num <= 100) return '1/4 决赛'
+  if (num >= 101 && num <= 102) return '半决赛'
+  if (num === 103) return '三四名'
   return '决赛'
 }
 
 function roundVariant(m: Match): '' | 'success' | 'warning' | 'danger' {
   if (m.group) return ''
   const num = parseInt(m.id.replace('KO-', ''))
-  if (num >= 77) return 'danger'
-  if (num >= 73) return 'warning'
-  if (num >= 65) return 'success'
+  if (num >= 103) return 'danger'
+  if (num >= 97) return 'warning'
+  if (num >= 89) return 'success'
   return ''
 }
 
