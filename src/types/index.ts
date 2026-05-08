@@ -6,11 +6,10 @@ export interface Team {
   nameZh: string
   flag: string
   confederation: Confederation
-  fifaRank: number
 }
 
 export type GroupName = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H'
-  | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P'
+  | 'I' | 'J' | 'K' | 'L'
 
 export type KnockoutRound =
   | 'roundOf32'
