@@ -270,8 +270,8 @@ function buildFallbackMatches(): Match[] {
   for (const stage of koStages) {
     for (let i = 0; i < stage.count; i++) {
       id++
-      const month = stage.round === 'final' || stage.round === 'thirdPlace' ? 7 : (stage.dates[i % stage.dates.length] > 30 ? 7 : 6)
-      const day = stage.dates[i % stage.dates.length] % 30 || 30
+      const month = 7 // All knockout from R16 onwards is in July
+      const day = stage.dates[i % stage.dates.length]
       const start = new Date(`2026-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}T10:00:00+08:00`)
       const prevBase = 72 + (stage.round === 'roundOf16' ? 0 : stage.round === 'quarterFinal' ? 16 : stage.round === 'semiFinal' ? 24 : stage.round === 'thirdPlace' ? 28 : 30)
       matches.push({
