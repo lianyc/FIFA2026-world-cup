@@ -128,7 +128,7 @@ const venueNames: Record<string, string> = {
 
 const API_URL = import.meta.env.DEV
   ? '/api/fixtures'
-  : 'https://fixturedownload.com/feed/json/fifa-world-cup-2026'
+  : 'https://corsproxy.io/?' + encodeURIComponent('https://fixturedownload.com/feed/json/fifa-world-cup-2026')
 
 interface ApiMatch {
   MatchNumber: number
