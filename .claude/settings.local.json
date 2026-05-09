@@ -4,7 +4,11 @@
       "WebSearch",
       "WebFetch(domain:sportscore.com)",
       "WebFetch(domain:github.com)",
-      "Bash(curl -s --max-time 10 \"https://sportscore.com/api/v1/sports/1/events/date/2026-06-14?page=1\")"
+      "Bash(curl -s --max-time 10 \"https://sportscore.com/api/v1/sports/1/events/date/2026-06-14?page=1\")",
+      "Bash(git remote *)",
+      "Bash(git push *)",
+      "Bash(git credential *)",
+      "Bash(npm install *)"
     ]
   }
 }
