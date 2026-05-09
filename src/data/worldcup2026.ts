@@ -126,9 +126,13 @@ const venueNames: Record<string, string> = {
 
 // ── API data fetcher & transform ─────────────────────────────
 
-const API_URL = import.meta.env.DEV
-  ? '/api/fixtures'
-  : 'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://fixturedownload.com/feed/json/fifa-world-cup-2026')
+const TARGET = 'https://fixturedownload.com/feed/json/fifa-world-cup-2026'
+
+const PROXY_URLS = [
+  'https://api.allorigins.win/raw?url=',
+  'https://corsproxy.io/?',
+  'https://proxy.cors.sh/',
+]
 
 interface ApiMatch {
   MatchNumber: number
@@ -157,13 +161,38 @@ function apiRoundLabel(round: number, group: string | null): string {
   return labels[round] || `第${round}轮`
 }
 
+async function tryFetch(url: string): Promise<ApiMatch[]> {
+  const res = await fetch(url)
+  if (!res.ok) throw new Error(`HTTP ${res.status}`)
+  return res.json()
+}
+
 export async function fetchMatchesFromApi(force = false): Promise<Match[]> {
   if (cachedApiMatches && !force) return cachedApiMatches
 
   try {
-    const res = await fetch(API_URL)
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
-    const data: ApiMatch[] = await res.json()
+    let data: ApiMatch[] | null = null
+
+    if (import.meta.env.DEV) {
+      data = await tryFetch('/api/fixtures')
+    } else {
+      // Try each proxy, fallback to direct
+      const urls = [...PROXY_URLS.map(p => p + encodeURIComponent(TARGET)), TARGET]
+      for (const url of urls) {
+        try {
+          data = await tryFetch(url)
+          break
+        } catch {
+          continue
+        }
+      }
+      if (!data) {
+        // Last attempt: try direct (some CDNs allow it)
+        const res = await fetch(TARGET)
+        if (res.ok) data = await res.json()
+        else throw new Error('All proxies failed')
+      }
+    }
 
     const matches: Match[] = []
     for (const m of data) {
