@@ -6,9 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
-    "preview": "vite preview",
-    "deploy": "npm run build && npx vercel --prod",
-    "deploy:github": "npm run build && npx gh-pages -d dist --dotfiles --nojekyll -r git@github.com:lianyc/FIFA2026-world-cup.git"
+    "preview": "vite preview"
   },
   "dependencies": {
     "element-plus": "^2.9.1",
