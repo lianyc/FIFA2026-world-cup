@@ -194,6 +194,8 @@ export async function fetchMatchesFromApi(force = false): Promise<Match[]> {
       }
     }
 
+    if (!data) throw new Error('No data from any source')
+
     const matches: Match[] = []
     for (const m of data) {
       const homeId = nameToId[m.HomeTeam] || null
